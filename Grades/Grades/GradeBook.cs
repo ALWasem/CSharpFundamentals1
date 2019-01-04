@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Grades
 {
-    public class GradeBook
+    public class GradeBook : GradeTracker
     {
 
         public GradeBook()
@@ -17,7 +18,7 @@ namespace Grades
 
         }
 
-        public virtual GradeStatistcs ComputeStatistics()
+        public override GradeStatistcs ComputeStatistics()
         {
             GradeStatistcs stats = new GradeStatistcs();
 
@@ -34,7 +35,7 @@ namespace Grades
             return stats;
         }
 
-        internal void WriteGrades(TextWriter destination)
+        internal override void WriteGrades(TextWriter destination)
         {
             for (int i = grades.Count - 1; i > 0; i--)
             {
@@ -42,40 +43,16 @@ namespace Grades
             }
         }
 
-        public void AddGrade(float grade)
+        public override void AddGrade(float grade)
         {
             grades.Add(grade);
         }
 
-        public string Name
+        public override IEnumerator GetEnumerator()
         {
-            get
-            {
-                return _name;
-            }
-
-            set
-            {
-                if (String.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentException("Name cannot be null or empty");
-                }
-
-                if (_name != value && NameChanged != null)
-                {
-                    NameChangedEventArgs args = new NameChangedEventArgs();
-                    args.ExistingName = _name;
-                    args.NewName = value;
-
-                    NameChanged(this, args);
-                }
-                _name = value;
-            }
+            return grades.GetEnumerator();
         }
 
-        public event NameChangedDelegate NameChanged;
-
-        private string _name;
         protected List<float> grades;
     }
 
